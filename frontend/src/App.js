@@ -236,7 +236,301 @@ const TrainingComponent = ({ selectedModel }) => {
   );
 };
 
-// Компонент статистики
+// Компонент для редактирования персонажей
+const CharacterEditor = ({ selectedModel }) => {
+  const [character, setCharacter] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [originalCharacter, setOriginalCharacter] = useState(null);
+
+  useEffect(() => {
+    if (selectedModel) {
+      loadCharacter();
+    } else {
+      setCharacter(null);
+    }
+  }, [selectedModel]);
+
+  const loadCharacter = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${API}/model/${selectedModel}`);
+      setCharacter(response.data);
+      setOriginalCharacter(JSON.parse(JSON.stringify(response.data)));
+    } catch (error) {
+      console.error('Ошибка загрузки персонажа:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!character || !selectedModel) return;
+    
+    setSaving(true);
+    try {
+      await axios.post(`${API}/model/${selectedModel}`, character);
+      alert('✅ Персонаж успешно сохранен!');
+      setOriginalCharacter(JSON.parse(JSON.stringify(character)));
+    } catch (error) {
+      console.error('Ошибка сохранения персонажа:', error);
+      alert('❌ Ошибка при сохранении персонажа');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleReset = () => {
+    if (originalCharacter) {
+      setCharacter(JSON.parse(JSON.stringify(originalCharacter)));
+    }
+  };
+
+  const hasChanges = () => {
+    return JSON.stringify(character) !== JSON.stringify(originalCharacter);
+  };
+
+  if (!selectedModel) {
+    return (
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <div className="text-center text-gray-500">
+          <p className="text-lg">🎭 Редактор персонажей</p>
+          <p className="text-sm mt-2">Выберите модель для редактирования персонажа</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+          <p>Загрузка персонажа...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!character) {
+    return (
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <p className="text-center text-red-500">Ошибка загрузки персонажа</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold">🎭 Редактор персонажа</h3>
+        {hasChanges() && (
+          <span className="text-sm text-orange-600 bg-orange-100 px-2 py-1 rounded">
+            Есть несохраненные изменения
+          </span>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Основная информация */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            👤 Имя персонажа:
+          </label>
+          <input
+            type="text"
+            value={character.name}
+            onChange={(e) => setCharacter({...character, name: e.target.value})}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            🎂 Возраст:
+          </label>
+          <input
+            type="number"
+            min="18"
+            max="99"
+            value={character.age}
+            onChange={(e) => setCharacter({...character, age: parseInt(e.target.value)})}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            🌍 Страна:
+          </label>
+          <input
+            type="text"
+            value={character.country}
+            onChange={(e) => setCharacter({...character, country: e.target.value})}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            🏙️ Город:
+          </label>
+          <input
+            type="text"
+            value={character.city}
+            onChange={(e) => setCharacter({...character, city: e.target.value})}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            🗣️ Язык:
+          </label>
+          <select
+            value={character.language}
+            onChange={(e) => setCharacter({...character, language: e.target.value})}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="ru">Русский</option>
+            <option value="en">Английский</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            📱 Количество сообщений до завершения:
+          </label>
+          <input
+            type="number"
+            min="3"
+            max="15"
+            value={character.message_count}
+            onChange={(e) => setCharacter({...character, message_count: parseInt(e.target.value)})}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </div>
+
+      {/* Настроения и интересы */}
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            😊 Настроение:
+          </label>
+          <input
+            type="text"
+            value={character.mood}
+            onChange={(e) => setCharacter({...character, mood: e.target.value})}
+            placeholder="игривое, романтичное, дерзкое..."
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            💭 Интересы (через запятую):
+          </label>
+          <input
+            type="text"
+            value={character.interests.join(', ')}
+            onChange={(e) => setCharacter({...character, interests: e.target.value.split(',').map(s => s.trim())})}
+            placeholder="фотография, танцы, музыка..."
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </div>
+
+      {/* Сообщения */}
+      <div className="mt-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          💕 Предпоследнее сообщение (с намеком):
+        </label>
+        <textarea
+          value={character.semi_message}
+          onChange={(e) => setCharacter({...character, semi_message: e.target.value})}
+          rows={2}
+          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div className="mt-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          🔗 Финальное сообщение (с ссылкой на Telegram):
+        </label>
+        <textarea
+          value={character.final_message}
+          onChange={(e) => setCharacter({...character, final_message: e.target.value})}
+          rows={2}
+          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      {/* Черты характера */}
+      <div className="mt-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          🎨 Черты характера (через запятую):
+        </label>
+        <input
+          type="text"
+          value={character.personality_traits.join(', ')}
+          onChange={(e) => setCharacter({...character, personality_traits: e.target.value.split(',').map(s => s.trim())})}
+          placeholder="flirty, playful, sweet, romantic..."
+          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      {/* Настройки */}
+      <div className="mt-4 flex items-center gap-6">
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={character.use_emoji}
+            onChange={(e) => setCharacter({...character, use_emoji: e.target.checked})}
+            className="w-4 h-4 text-blue-600"
+          />
+          <span className="text-sm text-gray-700">😀 Использовать эмодзи</span>
+        </label>
+
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={character.learning_enabled}
+            onChange={(e) => setCharacter({...character, learning_enabled: e.target.checked})}
+            className="w-4 h-4 text-blue-600"
+          />
+          <span className="text-sm text-gray-700">🧠 Обучение включено</span>
+        </label>
+      </div>
+
+      {/* Кнопки управления */}
+      <div className="mt-6 flex gap-3">
+        <button
+          onClick={handleSave}
+          disabled={!hasChanges() || saving}
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md font-medium disabled:bg-gray-400 transition-colors"
+        >
+          {saving ? '💾 Сохранение...' : '💾 Сохранить персонажа'}
+        </button>
+        
+        <button
+          onClick={handleReset}
+          disabled={!hasChanges()}
+          className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md font-medium disabled:bg-gray-400 transition-colors"
+        >
+          🔄 Отменить изменения
+        </button>
+
+        <button
+          onClick={loadCharacter}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md font-medium transition-colors"
+        >
+          🔄 Перезагрузить
+        </button>
+      </div>
+    </div>
+  );
+};
 const StatisticsComponent = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
