@@ -66,7 +66,7 @@ const TestComponent = ({ selectedModel }) => {
       setResponse(res.data.response);
     } catch (error) {
       console.error('Ошибка тестирования:', error);
-      setResponse('Ошибка при получении ответа');
+      setResponse('❌ Ошибка при получении ответа');
     } finally {
       setLoading(false);
     }
@@ -83,69 +83,125 @@ const TestComponent = ({ selectedModel }) => {
         rating: rating,
         model: selectedModel
       });
-      alert('Рейтинг сохранен!');
+      alert('✅ Рейтинг сохранен успешно!');
     } catch (error) {
       console.error('Ошибка рейтинга:', error);
-      alert('Ошибка при сохранении рейтинга');
+      alert('❌ Ошибка при сохранении рейтинга');
     }
+  };
+
+  // Примеры сообщений для тестирования
+  const exampleMessages = [
+    "Привет! Как дела?",
+    "Что любишь делать?",
+    "Ты очень красивая",
+    "Хочу познакомиться поближе",
+    "Расскажи о себе"
+  ];
+
+  const handleExampleClick = (exampleMsg) => {
+    setMessage(exampleMsg);
   };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      <h3 className="text-lg font-semibold mb-4">Тестирование модели</h3>
+      <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
+        🧪 Тестирование модели
+      </h3>
       
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Введите сообщение:
-        </label>
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Привет, как дела?"
-          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-          onKeyPress={(e) => e.key === 'Enter' && handleTest()}
-        />
-      </div>
-
-      <button
-        onClick={handleTest}
-        disabled={!selectedModel || !message.trim() || loading}
-        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 disabled:bg-gray-400 mb-4"
-      >
-        {loading ? 'Тестирование...' : 'Тестировать'}
-      </button>
-
-      {response && (
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Ответ модели:
-          </label>
-          <div className="p-3 bg-gray-100 rounded-md">
-            {response}
-          </div>
-          
-          <div className="mt-4 flex items-center gap-4">
-            <label className="text-sm font-medium text-gray-700">
-              Оценка (1-10):
-            </label>
-            <input
-              type="range"
-              min="1"
-              max="10"
-              value={rating}
-              onChange={(e) => setRating(parseInt(e.target.value))}
-              className="flex-1"
-            />
-            <span className="text-sm font-medium">{rating}</span>
-            <button
-              onClick={handleRating}
-              className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600"
-            >
-              Оценить
-            </button>
-          </div>
+      {!selectedModel && (
+        <div className="text-center py-8 text-gray-500">
+          <p className="text-lg">⚠️ Выберите модель для тестирования</p>
+          <p className="text-sm mt-2">Используйте выпадающий список выше</p>
         </div>
+      )}
+
+      {selectedModel && (
+        <>
+          {/* Примеры сообщений */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              💡 Быстрые примеры:
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {exampleMessages.map((example, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleExampleClick(example)}
+                  className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-full transition-colors"
+                >
+                  {example}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              💬 Введите сообщение для тестирования:
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Напишите сообщение для персонажа..."
+                className="w-full p-3 pr-12 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                onKeyPress={(e) => e.key === 'Enter' && handleTest()}
+              />
+              <div className="absolute right-3 top-3 text-gray-400">
+                💬
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={handleTest}
+            disabled={!selectedModel || !message.trim() || loading}
+            className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 mb-4 font-medium transition-colors flex items-center gap-2"
+          >
+            {loading ? '🔄 Тестирование...' : '🚀 Протестировать'}
+          </button>
+
+          {response && (
+            <div className="mb-4 p-4 border-2 border-blue-100 rounded-lg bg-blue-50">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                🤖 Ответ персонажа:
+              </label>
+              <div className="p-3 bg-white rounded-lg border-l-4 border-blue-400">
+                <p className="text-gray-800">{response}</p>
+              </div>
+              
+              <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-sm font-medium text-gray-700">
+                    ⭐ Оцените качество ответа (1-10):
+                  </label>
+                  <span className="text-lg font-bold text-blue-600">{rating}/10</span>
+                </div>
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={rating}
+                  onChange={(e) => setRating(parseInt(e.target.value))}
+                  className="w-full mb-3"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mb-3">
+                  <span>1 (Очень плохо)</span>
+                  <span>5 (Нормально)</span>
+                  <span>10 (Отлично)</span>
+                </div>
+                <button
+                  onClick={handleRating}
+                  className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 font-medium transition-colors flex items-center gap-2"
+                >
+                  📊 Сохранить оценку
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
