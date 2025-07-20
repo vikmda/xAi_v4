@@ -144,6 +144,35 @@ def detect_emotion(message: str) -> str:
     else:
         return "neutral"
 
+async def adapt_model_to_platform(model_config: ModelConfig, platform_settings: dict) -> ModelConfig:
+    """Автоматическая адаптация модели под настройки платформы"""
+    if not platform_settings.get("auto_adapt", False):
+        return model_config
+    
+    # Адаптируем возраст
+    age_range = platform_settings.get("age_range", {"min": 18, "max": 35})
+    model_config.age = min(max(model_config.age, age_range["min"]), age_range["max"])
+    
+    # Адаптируем страну и язык
+    if platform_settings.get("default_country"):
+        model_config.country = platform_settings["default_country"]
+    if platform_settings.get("default_language"):
+        model_config.language = platform_settings["default_language"]
+    
+    # Адаптируем количество сообщений
+    msg_limits = platform_settings.get("message_limits", {"min": 3, "max": 8})
+    model_config.message_count = min(max(model_config.message_count, msg_limits["min"]), msg_limits["max"])
+    
+    # Адаптируем стиль общения
+    response_style = platform_settings.get("response_style", "flirty")
+    if response_style not in model_config.personality_traits:
+        model_config.personality_traits.append(response_style)
+    
+    # Адаптируем использование эмодзи
+    model_config.use_emoji = platform_settings.get("emoji_usage", True)
+    
+    return model_config
+
 async def generate_ai_response(message: str, model_config: ModelConfig, conversation_state: dict, model_name: str) -> str:
     """Генерация ответа от ИИ"""
     logger.info(f"Generating response for message: '{message}', model: '{model_name}' (display: '{model_config.name}')")
