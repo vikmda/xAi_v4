@@ -543,6 +543,7 @@ async def get_settings():
     except Exception as e:
         logger.error(f"Ошибка в get_settings: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+@api_router.get("/health")
 async def health_check():
     """Проверка здоровья системы"""
     try:
