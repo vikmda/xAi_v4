@@ -297,6 +297,10 @@ async def chat(request: ChatRequest):
         # Загружаем модель
         model_config = await load_model(request.model)
         
+        # Получаем настройки платформы и адаптируем модель
+        platform_settings = await get_platform_settings()
+        model_config = await adapt_model_to_platform(model_config, platform_settings)
+        
         # Получаем состояние диалога
         conversation_state = get_conversation_state(request.user_id, request.model)
         conversation_state["message_count"] += 1
@@ -323,6 +327,7 @@ async def chat(request: ChatRequest):
             "is_semi": is_semi,
             "is_last": is_last,
             "emotion": detect_emotion(request.message),
+            "platform_adapted": True,
             "timestamp": datetime.utcnow()
         })
         
