@@ -362,12 +362,7 @@ const App = () => {
     loadSettings();
   }, []);
 
-  // Автосохранение при изменении модели
-  useEffect(() => {
-    if (selectedModel && settings.auto_save) {
-      saveSettings({ default_model: selectedModel, auto_save: settings.auto_save });
-    }
-  }, [selectedModel, settings.auto_save]);
+  // Убираем автосохранение - пользователь хочет кнопку мгновенного сохранения
 
   const loadModels = async () => {
     try {
