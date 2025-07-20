@@ -406,11 +406,20 @@ const App = () => {
     setSelectedModel(modelName);
   };
 
+  const handleSaveSettings = async () => {
+    const newSettings = { 
+      default_model: selectedModel,
+      auto_save: false  // Убираем автосохранение
+    };
+    setSettings(newSettings);
+    await saveSettings(newSettings);
+  };
+
   const toggleAutoSave = () => {
+    // Эта функция больше не нужна, но оставляем для совместимости
     const newAutoSave = !settings.auto_save;
     const newSettings = { ...settings, auto_save: newAutoSave };
     setSettings(newSettings);
-    saveSettings(newSettings);
   };
 
   if (loading) {
