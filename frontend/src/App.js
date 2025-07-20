@@ -676,6 +676,137 @@ const CharacterEditor = ({ selectedModel }) => {
     </div>
   );
 };
+// Компонент настроек чат-платформ
+const PlatformSettings = () => {
+  const [settings, setSettings] = useState({
+    default_country: 'Россия',
+    default_language: 'ru',
+    age_range: { min: 18, max: 35 },
+    response_style: 'flirty',
+    platform_type: 'dating',
+    auto_adapt: true,
+    message_limits: { min: 3, max: 8 },
+    emoji_usage: true,
+    nsfw_level: 'medium'
+  });
+  const [loading, setLoading] = useState(false);
+
+  const platformTypes = [
+    { value: 'dating', label: '💕 Сайт знакомств' },
+    { value: 'social', label: '💬 Социальная сеть' },
+    { value: 'adult', label: '🔞 Взрослый чат' },
+    { value: 'cam', label: '📹 Вебкам сайт' }
+  ];
+
+  const responseStyles = [
+    { value: 'flirty', label: '😘 Флиртующий' },
+    { value: 'romantic', label: '💝 Романтичный' },
+    { value: 'playful', label: '😜 Игривый' },
+    { value: 'seductive', label: '🔥 Соблазнительный' }
+  ];
+
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      await axios.post(`${API}/platform-settings`, settings);
+      alert('✅ Настройки платформы сохранены!');
+    } catch (error) {
+      alert('❌ Ошибка сохранения настроек');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      <h3 className="text-xl font-semibold mb-6">⚙️ Настройки платформы</h3>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">🌍 Страна по умолчанию:</label>
+          <select value={settings.default_country} onChange={(e) => setSettings({...settings, default_country: e.target.value})} 
+                  className="w-full p-2 border border-gray-300 rounded-md">
+            <option value="Россия">🇷🇺 Россия</option>
+            <option value="Украина">🇺🇦 Украина</option>
+            <option value="USA">🇺🇸 США</option>
+            <option value="Germany">🇩🇪 Германия</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">🗣️ Язык по умолчанию:</label>
+          <select value={settings.default_language} onChange={(e) => setSettings({...settings, default_language: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded-md">
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="en">🇺🇸 English</option>
+            <option value="uk">🇺🇦 Українська</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">📱 Тип платформы:</label>
+          <select value={settings.platform_type} onChange={(e) => setSettings({...settings, platform_type: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded-md">
+            {platformTypes.map(type => (
+              <option key={type.value} value={type.value}>{type.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">💫 Стиль общения:</label>
+          <select value={settings.response_style} onChange={(e) => setSettings({...settings, response_style: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded-md">
+            {responseStyles.map(style => (
+              <option key={style.value} value={style.value}>{style.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">🎂 Возраст (мин):</label>
+          <input type="number" min="18" max="50" value={settings.age_range.min}
+                 onChange={(e) => setSettings({...settings, age_range: {...settings.age_range, min: parseInt(e.target.value)}})}
+                 className="w-full p-2 border border-gray-300 rounded-md"/>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">🎂 Возраст (макс):</label>
+          <input type="number" min="18" max="50" value={settings.age_range.max}
+                 onChange={(e) => setSettings({...settings, age_range: {...settings.age_range, max: parseInt(e.target.value)}})}
+                 className="w-full p-2 border border-gray-300 rounded-md"/>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">📝 Макс сообщений:</label>
+          <input type="number" min="3" max="15" value={settings.message_limits.max}
+                 onChange={(e) => setSettings({...settings, message_limits: {...settings.message_limits, max: parseInt(e.target.value)}})}
+                 className="w-full p-2 border border-gray-300 rounded-md"/>
+        </div>
+      </div>
+
+      <div className="mt-6 flex items-center gap-6">
+        <label className="flex items-center gap-2">
+          <input type="checkbox" checked={settings.auto_adapt}
+                 onChange={(e) => setSettings({...settings, auto_adapt: e.target.checked})}
+                 className="w-4 h-4 text-blue-600"/>
+          <span className="text-sm">🤖 Авто-адаптация к чату</span>
+        </label>
+        <label className="flex items-center gap-2">
+          <input type="checkbox" checked={settings.emoji_usage}
+                 onChange={(e) => setSettings({...settings, emoji_usage: e.target.checked})}
+                 className="w-4 h-4 text-blue-600"/>
+          <span className="text-sm">😀 Использовать эмодзи</span>
+        </label>
+      </div>
+
+      <button onClick={handleSave} disabled={loading}
+              className="mt-6 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg">
+        {loading ? '💾 Сохранение...' : '💾 Сохранить настройки'}
+      </button>
+    </div>
+  );
+};
+
 const StatisticsComponent = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
