@@ -448,22 +448,20 @@ const App = () => {
         <div className="max-w-4xl mx-auto">
           {/* Панель настроек */}
           <div className="bg-white p-4 rounded-lg shadow-md mb-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-4">
               <ModelSelector
                 models={models}
                 selectedModel={selectedModel}
                 onModelChange={handleModelChange}
               />
               <div className="flex items-center gap-4">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={settings.auto_save}
-                    onChange={toggleAutoSave}
-                    className="w-4 h-4 text-blue-600"
-                  />
-                  <span className="text-sm text-gray-700">Автосохранение</span>
-                </label>
+                <button
+                  onClick={handleSaveSettings}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md font-medium transition-colors"
+                  disabled={!selectedModel}
+                >
+                  💾 Сохранить настройки
+                </button>
                 {saveStatus && (
                   <div className={`text-sm font-medium ${saveStatus.includes('✓') ? 'text-green-600' : 'text-red-600'}`}>
                     {saveStatus}
@@ -471,6 +469,19 @@ const App = () => {
                 )}
               </div>
             </div>
+            
+            {/* Информация о выбранной модели */}
+            {selectedModel && (
+              <div className="mt-3 p-3 bg-gray-50 rounded-md">
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Выбранная модель:</span> {models.find(m => m.name === selectedModel)?.display_name} 
+                  <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                    {models.find(m => m.name === selectedModel)?.language === 'ru' ? '🇷🇺 Русская' : '🇺🇸 Английская'}
+                  </span>
+                  <span className="ml-2 text-gray-500">({models.find(m => m.name === selectedModel)?.country})</span>
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Табы */}
