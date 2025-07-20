@@ -750,12 +750,16 @@ const App = () => {
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            AI Sexter Bot Panel
+          <h1 className="text-4xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-2">
+            <span>🤖</span>
+            AI Секс-бот Панель Управления
           </h1>
-          <p className="text-gray-600">
-            Универсальная панель управления ИИ-ботом
+          <p className="text-lg text-gray-600">
+            Профессиональная система управления AI персонажами для чат-ботов
           </p>
+          <div className="mt-2 text-sm text-gray-500">
+            Настройка, обучение и тестирование умных персонажей
+          </div>
         </header>
 
         <div className="max-w-4xl mx-auto">
