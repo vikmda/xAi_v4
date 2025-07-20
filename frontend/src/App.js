@@ -808,7 +808,7 @@ const App = () => {
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                Тестирование
+                🧪 Тестирование
               </button>
               <button
                 onClick={() => setActiveTab('training')}
@@ -818,7 +818,17 @@ const App = () => {
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                Обучение
+                🎓 Обучение
+              </button>
+              <button
+                onClick={() => setActiveTab('character')}
+                className={`flex-1 py-2 px-4 text-sm font-medium rounded-md ${
+                  activeTab === 'character'
+                    ? 'bg-blue-500 text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                🎭 Персонаж
               </button>
               <button
                 onClick={() => setActiveTab('statistics')}
@@ -828,7 +838,7 @@ const App = () => {
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                Статистика
+                📊 Статистика
               </button>
             </nav>
           </div>
