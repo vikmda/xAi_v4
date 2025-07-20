@@ -1111,6 +1111,16 @@ const App = () => {
                 🎭 Персонаж
               </button>
               <button
+                onClick={() => setActiveTab('settings')}
+                className={`flex-1 py-2 px-4 text-sm font-medium rounded-md ${
+                  activeTab === 'settings'
+                    ? 'bg-blue-500 text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                ⚙️ Настройки
+              </button>
+              <button
                 onClick={() => setActiveTab('statistics')}
                 className={`flex-1 py-2 px-4 text-sm font-medium rounded-md ${
                   activeTab === 'statistics'
