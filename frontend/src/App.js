@@ -225,69 +225,158 @@ const TrainingComponent = ({ selectedModel }) => {
         model: selectedModel,
         priority: priority
       });
-      alert('Обучающие данные сохранены!');
+      alert('✅ Обучающие данные успешно сохранены!');
       setQuestion('');
       setAnswer('');
+      setPriority(5);
     } catch (error) {
       console.error('Ошибка обучения:', error);
-      alert('Ошибка при сохранении обучающих данных');
+      alert('❌ Ошибка при сохранении обучающих данных');
     } finally {
       setLoading(false);
     }
   };
 
+  // Примеры для обучения
+  const trainingExamples = [
+    {
+      question: "Привет, как дела?",
+      answer: "Привет красавчик! У меня все отлично, особенно когда вижу таких милых 😘"
+    },
+    {
+      question: "Что любишь делать?",
+      answer: "Люблю танцевать, фотографироваться... А еще очень люблю общаться с интересными мужчинами 💕"
+    },
+    {
+      question: "Ты красивая",
+      answer: "Спасибо милый! Ты такой галантный 😊 А ты тоже симпатичный?"
+    }
+  ];
+
+  const handleExampleClick = (example) => {
+    setQuestion(example.question);
+    setAnswer(example.answer);
+  };
+
+  const getPriorityLabel = (priority) => {
+    if (priority <= 3) return "🔸 Низкий";
+    if (priority <= 6) return "🔶 Средний";
+    if (priority <= 8) return "🔸 Высокий";
+    return "🔥 Критичный";
+  };
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      <h3 className="text-lg font-semibold mb-4">Ручное обучение</h3>
+      <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
+        🎓 Ручное обучение модели
+      </h3>
       
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Вопрос:
-        </label>
-        <input
-          type="text"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          placeholder="Как дела?"
-          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+      {!selectedModel && (
+        <div className="text-center py-8 text-gray-500">
+          <p className="text-lg">⚠️ Выберите модель для обучения</p>
+          <p className="text-sm mt-2">Обучение поможет улучшить ответы персонажа</p>
+        </div>
+      )}
 
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Ответ:
-        </label>
-        <textarea
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-          placeholder="Отлично, спасибо! А у тебя как дела?"
-          rows={3}
-          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+      {selectedModel && (
+        <>
+          {/* Примеры для обучения */}
+          <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <h4 className="font-medium text-blue-800 mb-3">💡 Примеры обучения:</h4>
+            <div className="space-y-2">
+              {trainingExamples.map((example, index) => (
+                <div
+                  key={index}
+                  onClick={() => handleExampleClick(example)}
+                  className="p-3 bg-white border border-blue-100 rounded-lg cursor-pointer hover:border-blue-300 transition-colors"
+                >
+                  <div className="text-sm text-gray-600">
+                    <strong>Вопрос:</strong> {example.question}
+                  </div>
+                  <div className="text-sm text-blue-700 mt-1">
+                    <strong>Ответ:</strong> {example.answer}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-      <div className="mb-4 flex items-center gap-4">
-        <label className="text-sm font-medium text-gray-700">
-          Приоритет (1-10):
-        </label>
-        <input
-          type="range"
-          min="1"
-          max="10"
-          value={priority}
-          onChange={(e) => setPriority(parseInt(e.target.value))}
-          className="flex-1"
-        />
-        <span className="text-sm font-medium">{priority}</span>
-      </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                ❓ Вопрос/Сообщение пользователя:
+              </label>
+              <textarea
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="Например: Привет, как дела?"
+                rows={3}
+                className="w-full p-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
 
-      <button
-        onClick={handleTrain}
-        disabled={!selectedModel || !question.trim() || !answer.trim() || loading}
-        className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 disabled:bg-gray-400"
-      >
-        {loading ? 'Сохранение...' : 'Сохранить'}
-      </button>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                💬 Правильный ответ персонажа:
+              </label>
+              <textarea
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                placeholder="Например: Привет красавчик! У меня все отлично 😘"
+                rows={3}
+                className="w-full p-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              ⚡ Приоритет обучения: {getPriorityLabel(priority)}
+            </label>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={priority}
+                onChange={(e) => setPriority(parseInt(e.target.value))}
+                className="flex-1"
+              />
+              <span className="text-sm text-gray-500">10</span>
+              <span className="text-lg font-bold text-blue-600 min-w-[2rem] text-center">
+                {priority}
+              </span>
+            </div>
+            <div className="mt-2 text-xs text-gray-500">
+              Высокий приоритет означает, что этот ответ будет использоваться чаще
+            </div>
+          </div>
+
+          <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-start gap-2">
+              <span className="text-yellow-600 mt-0.5">💡</span>
+              <div className="text-sm text-yellow-800">
+                <strong>Советы по обучению:</strong>
+                <ul className="mt-1 space-y-1">
+                  <li>• Используйте естественный язык и эмодзи</li>
+                  <li>• Добавляйте флиртовые элементы для персонажа</li>
+                  <li>• Высокий приоритет (8-10) для самых важных ответов</li>
+                  <li>• Учитывайте характер и настроение персонажа</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={handleTrain}
+            disabled={!selectedModel || !question.trim() || !answer.trim() || loading}
+            className="mt-6 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium disabled:bg-gray-400 transition-colors flex items-center gap-2"
+          >
+            {loading ? '💾 Сохранение...' : '🎓 Обучить модель'}
+          </button>
+        </>
+      )}
     </div>
   );
 };
