@@ -1137,6 +1137,7 @@ const App = () => {
           {activeTab === 'test' && <TestComponent selectedModel={selectedModel} />}
           {activeTab === 'training' && <TrainingComponent selectedModel={selectedModel} />}
           {activeTab === 'character' && <CharacterEditor selectedModel={selectedModel} />}
+          {activeTab === 'settings' && <PlatformSettings />}
           {activeTab === 'statistics' && <StatisticsComponent />}
         </div>
       </div>
