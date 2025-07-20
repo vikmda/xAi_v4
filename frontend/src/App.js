@@ -7,22 +7,41 @@ const API = `${BACKEND_URL}/api`;
 
 // Компонент для выбора модели
 const ModelSelector = ({ models, selectedModel, onModelChange }) => {
+  // Группируем модели по языку для лучшего отображения
+  const russianModels = models.filter(model => model.language === 'ru');
+  const englishModels = models.filter(model => model.language === 'en');
+
   return (
     <div className="flex-1 mr-4">
       <label className="block text-sm font-medium text-gray-700 mb-2">
-        Выберите модель персонажа:
+        🤖 Выберите модель персонажа:
       </label>
       <select
         value={selectedModel}
         onChange={(e) => onModelChange(e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="w-full p-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
       >
         <option value="">Выберите модель...</option>
-        {models.map((model) => (
-          <option key={model.name} value={model.name}>
-            {model.display_name} ({model.language.toUpperCase()}) - {model.country}
-          </option>
-        ))}
+        
+        {russianModels.length > 0 && (
+          <optgroup label="🇷🇺 Русскоязычные модели">
+            {russianModels.map((model) => (
+              <option key={model.name} value={model.name}>
+                {model.display_name} - {model.country}
+              </option>
+            ))}
+          </optgroup>
+        )}
+        
+        {englishModels.length > 0 && (
+          <optgroup label="🇺🇸 Англоязычные модели">
+            {englishModels.map((model) => (
+              <option key={model.name} value={model.name}>
+                {model.display_name} - {model.country}
+              </option>
+            ))}
+          </optgroup>
+        )}
       </select>
     </div>
   );
