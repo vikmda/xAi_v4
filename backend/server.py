@@ -528,6 +528,51 @@ async def save_settings(settings: dict):
         logger.error(f"Ошибка в save_settings: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/platform-settings")
+async def save_platform_settings(settings: dict):
+    """Сохранение настроек платформы"""
+    try:
+        await db.platform_settings.update_one(
+            {"type": "platform_config"},
+            {
+                "$set": {
+                    **settings,
+                    "updated_at": datetime.utcnow()
+                }
+            },
+            upsert=True
+        )
+        
+        return {"message": "Настройки платформы сохранены", "status": "success"}
+    except Exception as e:
+        logger.error(f"Ошибка в save_platform_settings: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/platform-settings")
+async def get_platform_settings():
+    """Получение настроек платформы"""
+    try:
+        settings = await db.platform_settings.find_one({"type": "platform_config"})
+        if settings:
+            settings.pop("_id", None)
+            settings.pop("type", None)
+            return settings
+        else:
+            return {
+                "default_country": "Россия",
+                "default_language": "ru",
+                "age_range": {"min": 18, "max": 35},
+                "response_style": "flirty",
+                "platform_type": "dating",
+                "auto_adapt": True,
+                "message_limits": {"min": 3, "max": 8},
+                "emoji_usage": True,
+                "nsfw_level": "medium"
+            }
+    except Exception as e:
+        logger.error(f"Ошибка в get_platform_settings: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/settings")
 async def get_settings():
     """Получение пользовательских настроек"""
